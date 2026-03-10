@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrackIt — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080b14; --surface:#0d1120; --s2:#111827; --s3:#1a2035;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+  --text:#e8eaf6; --sub:#6b7a99;
+  --accent:#6366f1; --acc2:#818cf8;
+  --green:#10b981; --red:#f43f5e; --yellow:#f59e0b; --blue:#3b82f6; --purple:#a855f7;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:240px;min-width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;top:0;left:0;z-index:100;}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
+.sb-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(99,102,241,.4);}
+.sb-logo-name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;background:linear-gradient(90deg,#fff,var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-logo-sub{font-size:9px;color:var(--sub);letter-spacing:2.5px;text-transform:uppercase;padding-left:48px;}
+.nav-grp{padding:16px 10px 2px;}
+.nav-grp-lbl{font-size:9px;font-weight:700;color:var(--sub);letter-spacing:2px;text-transform:uppercase;padding:0 8px 8px;display:block;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);transition:all .15s;margin-bottom:2px;position:relative;}
+.nav-item:hover{background:var(--s3);color:var(--text);}
+.nav-item.active{background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(99,102,241,.04));color:var(--acc2);border:1px solid rgba(99,102,241,.2);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--accent);border-radius:0 3px 3px 0;}
+.nav-ic{font-size:15px;width:20px;text-align:center;}
+.sb-foot{margin-top:auto;padding:14px 10px;border-top:1px solid var(--border);}
+.back-link{display:flex;align-items:center;gap:7px;color:var(--sub);font-size:12px;text-decoration:none;padding:8px 12px;border-radius:8px;transition:all .15s;}
+.back-link:hover{background:var(--s3);color:var(--text);}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;padding:30px 34px;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.page-ttl{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:#fff;}
+.page-ttl span{color:var(--acc2);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.status-pill{display:flex;align-items:center;gap:7px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);padding:7px 14px;border-radius:100px;font-size:12px;font-weight:600;color:var(--green);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.clock{background:var(--s2);border:1px solid var(--border2);padding:7px 14px;border-radius:100px;font-size:12px;color:var(--sub);font-family:monospace;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:26px;}
+.sc{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;transition:all .2s;cursor:default;}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px);}
+.sc::after{content:'';position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.08;}
+.c1::after{background:var(--accent)}.c2::after{background:var(--green)}.c3::after{background:var(--purple)}.c4::after{background:var(--yellow)}.c5::after{background:var(--red)}
+.sc-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:14px;}
+.c1 .sc-icon{background:rgba(99,102,241,.15)}.c2 .sc-icon{background:rgba(16,185,129,.15)}.c3 .sc-icon{background:rgba(168,85,247,.15)}.c4 .sc-icon{background:rgba(245,158,11,.15)}.c5 .sc-icon{background:rgba(244,63,94,.15)}
+.sc-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;line-height:1;margin-bottom:4px;}
+.sc-lbl{font-size:11px;color:var(--sub);font-weight:500;}
+
+/* SECTIONS */
+.section{display:none;animation:fadeUp .25s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.card-ttl{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;}
+.ct-ic{width:28px;height:28px;border-radius:7px;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+/* FORM */
+.flbl{display:block;font-size:10px;font-weight:700;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.finput,.fselect,.ftextarea{width:100%;background:var(--s3);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:14px;}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.1);}
+.fselect option{background:var(--s2);}
+.ftextarea{resize:vertical;min-height:90px;}
+
+/* BUTTONS */
+.btn{border:none;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:all .18s;padding:10px 18px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#4f46e5);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.3);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.4);}
+.btn-mega{background:linear-gradient(90deg,#4f46e5,#7c3aed,#a855f7);color:#fff;font-size:14px;font-weight:700;padding:13px;box-shadow:0 6px 22px rgba(99,102,241,.35);}
+.btn-mega:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(99,102,241,.5);}
+.btn-ghost{background:var(--s3);color:var(--sub);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.btn-success{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);}
+.btn-success:hover{background:var(--green);color:#fff;}
+.btn-danger{background:rgba(244,63,94,.1);color:var(--red);border:1px solid rgba(244,63,94,.18);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-full{width:100%;justify-content:center;}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:7px;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:10px;font-weight:700;color:var(--sub);letter-spacing:1.2px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .12s;}
+tbody tr:hover td{background:var(--s3);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.4px;}
+.badge.UPSC{background:rgba(168,85,247,.15);color:#c084fc;}
+.badge.JEE{background:rgba(59,130,246,.15);color:#60a5fa;}
+.badge.NEET{background:rgba(16,185,129,.15);color:#34d399;}
+.badge.SSC{background:rgba(245,158,11,.15);color:#fbbf24;}
+.badge.IBPS{background:rgba(244,63,94,.15);color:#fb7185;}
+
+/* LOG */
+.log{background:#020409;border:1px solid var(--border);border-radius:10px;padding:14px;font-size:11px;font-family:'Courier New',monospace;max-height:200px;overflow-y:auto;line-height:2.1;margin-top:14px;}
+.log .ok{color:#34d399}.log .err{color:#f87171}.log .info{color:#374151}.log .warn{color:#fbbf24}
+
+/* ALERT */
+.alert{padding:11px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;display:none;}
+.alert.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--green);}
+.alert.err{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--red);}
+
+/* MISC */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.dvdr{height:1px;background:var(--border);margin:18px 0;}
+.thumb{width:84px;height:48px;border-radius:8px;object-fit:cover;background:var(--s3);border:1px solid var(--border);}
+.u-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+.empty{text-align:center;padding:48px 20px;color:var(--sub);}
+.empty .ei{font-size:38px;margin-bottom:10px;opacity:.4;}
+.empty p{font-size:13px;}
+.pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:600;background:var(--s3);color:var(--sub);border:1px solid var(--border);}
+.type-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tbtn{background:var(--s3);border:1.5px solid var(--border);color:var(--sub);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.tbtn.active{border-color:var(--accent);color:var(--acc2);background:rgba(99,102,241,.1);}
+.info-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.ik{width:180px;font-size:12px;color:var(--sub);}
+.iv{font-size:13px;font-weight:500;}
+.cat-row{display:flex;flex-direction:column;gap:14px;}
+.cat-item{}
+.cat-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;}
+.cat-bg{background:var(--s3);border-radius:100px;height:5px;overflow:hidden;}
+.cat-fill{height:100%;border-radius:100px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px;}
+
+/* MOBILE */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:98;backdrop-filter:blur(3px);}
+.sb-overlay.show{display:block;}
+.hamburger{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--surface);border:1px solid var(--border2);border-radius:10px;width:42px;height:42px;align-items:center;justify-content:center;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.4);}
+@media(max-width:900px){
+  .hamburger{display:flex;}
+  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:99;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:20px 16px;padding-top:70px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .g2,.g3{grid-template-columns:1fr;}
+  .topbar{flex-wrap:wrap;gap:10px;}
+  .tb-right{flex-wrap:wrap;gap:8px;}
+  .page-ttl{font-size:20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</div>
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-logo-icon">🎯</div>
+      <div class="sb-logo-name">CrackIt</div>
+    </div>
+    <div class="sb-logo-sub">Admin Console</div>
+  </div>
+
+  <div class="nav-grp">
+    <span class="nav-grp-lbl">Overview</span>
+    <div class="nav-item active" onclick="goto('dashboard',this)"><span class="nav-ic">◈</span>Dashboard</div>
+    <div class="nav-item" onclick="goto('server',this)"><span class="nav-ic">⬡</span>Server Status</div>
+  </div>
+  <div class="nav-grp">
+    <span class="nav-grp-lbl">Content</span>
+    <div class="nav-item" onclick="goto('playlists',this)"><span class="nav-ic">▦</span>Playlists</div>
+    <div class="nav-item" onclick="goto('videos',this)"><span class="nav-ic">▶</span>Videos</div>
+    <div class="nav-item" onclick="goto('notices',this)"><span class="nav-ic">◎</span>Notices</div>
+  </div>
+  <div class="nav-grp">
+    <span class="nav-grp-lbl">People</span>
+    <div class="nav-item" onclick="goto('users',this)"><span class="nav-ic">◉</span>Users</div>
+  </div>
+
+  <div class="sb-foot">
+    <a href="/" class="back-link">← Back to Site</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-ttl" id="pageTitle">Dashboard <span>Overview</span></div>
+    <div class="tb-right">
+      <div class="status-pill"><div class="dot"></div>Server Online</div>
+      <div class="clock" id="clock">00:00:00</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="sc c1"><div class="sc-icon">🎬</div><div class="sc-val" id="sTotal">—</div><div class="sc-lbl">Total Videos</div></div>
+    <div class="sc c2"><div class="sc-icon">👁</div><div class="sc-val" id="sViews">—</div><div class="sc-lbl">Total Views</div></div>
+    <div class="sc c3"><div class="sc-icon">📋</div><div class="sc-val" id="sPl">—</div><div class="sc-lbl">Playlists</div></div>
+    <div class="sc c4"><div class="sc-icon">🏷</div><div class="sc-val" id="sCats">5</div><div class="sc-lbl">Categories</div></div>
+    <div class="sc c5"><div class="sc-icon">👥</div><div class="sc-val" id="sUsers">—</div><div class="sc-lbl">Users</div></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="sec-dashboard">
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><div class="card-ttl"><div class="ct-ic">🔄</div>Quick Sync</div></div>
+        <div class="alert" id="dAlert"></div>
+        <button class="btn btn-mega btn-full" onclick="syncAll('dAlert','dLog')">🚀 &nbsp;Sync All Playlists</button>
+        <div class="log" id="dLog"><span class="info">// Ready</span></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-ttl"><div class="ct-ic">📊</div>Category Breakdown</div></div>
+        <div class="cat-row" id="catBars"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-ttl"><div class="ct-ic">🆕</div>Recently Added</div>
+        <button class="btn btn-ghost btn-sm" onclick="goto('videos',document.querySelectorAll('.nav-item')[3])">View All →</button>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Thumb</th><th>Title</th><th>Category</th><th>Views</th><th>Added</th></tr></thead>
+        <tbody id="recentTbl"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVER -->
+  <div class="section" id="sec-server">
+    <div class="g3" style="margin-bottom:18px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:34px;margin-bottom:10px;">🟢</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:var(--green);">Online</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:6px;letter-spacing:1.5px;">STATUS</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:34px;margin-bottom:10px;">⚡</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:#fff;" id="uptimeVal">—</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:6px;letter-spacing:1.5px;">UPTIME</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:34px;margin-bottom:10px;">🔄</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:#fff;">6h</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:6px;letter-spacing:1.5px;">AUTO SYNC</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-ttl"><div class="ct-ic">🖥️</div>System Info</div></div>
+      <div id="srvInfo"></div>
+    </div>
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head"><div class="card-ttl"><div class="ct-ic">🔄</div>Sync Controls</div></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" onclick="syncAll('sAlert','sLog')">🚀 Sync All</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('sLog').innerHTML='<span class=info>// Cleared</span>'">Clear Log</button>
+      </div>
+      <div class="alert" id="sAlert" style="margin-top:12px;"></div>
+      <div class="log" id="sLog"><span class="info">// Waiting...</span></div>
+    </div>
+  </div>
+
+  <!-- PLAYLISTS -->
+  <div class="section" id="sec-playlists">
+    <div class="g2">
+      <div>
+        <div class="card">
+          <div class="card-head"><div class="card-ttl"><div class="ct-ic">➕</div>Add Playlist</div></div>
+          <div class="alert" id="plAlert"></div>
+          <label class="flbl">YouTube Playlist ID</label>
+          <input class="finput" id="plId" placeholder="PLxxxxxxxxxxxxxxxxxxxx">
+          <label class="flbl">Category</label>
+          <select class="fselect" id="plCat"><option>UPSC</option><option>JEE</option><option>NEET</option><option>SSC</option><option>IBPS</option></select>
+          <label class="flbl">Label / Name</label>
+          <input class="finput" id="plLabel" placeholder="e.g. JEE Physics by PW">
+          <button class="btn btn-primary btn-full" onclick="syncOne()">▶ &nbsp;Fetch & Add Videos</button>
+          <div class="dvdr"></div>
+          <button class="btn btn-mega btn-full" onclick="syncAll('plAlert','plLog')">🚀 &nbsp;Sync All Playlists</button>
+          <div class="log" id="plLog"><span class="info">// Sync logs appear here</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-ttl"><div class="ct-ic">📋</div>Configured Playlists</div></div>
+        <div id="plList"><div class="empty"><div class="ei">📭</div><p>Loading...</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEOS -->
+  <div class="section" id="sec-videos">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-ttl"><div class="ct-ic">🎬</div>Video Library</div>
+        <div style="display:flex;gap:8px;">
+          <select class="fselect" id="vCat" onchange="loadVids()" style="margin-bottom:0;width:120px;padding:8px 12px;">
+            <option value="">All</option><option>UPSC</option><option>JEE</option><option>NEET</option><option>SSC</option><option>IBPS</option>
+          </select>
+          <input class="finput" id="vSearch" placeholder="Search..." onkeyup="loadVids()" style="margin-bottom:0;width:180px;padding:8px 14px;">
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Thumb</th><th>Title</th><th>Cat</th><th>Playlist</th><th>Views</th><th>Added</th><th></th></tr></thead>
+          <tbody id="vidTbl"></tbody>
+        </table>
+      </div>
+      <div id="vidEmpty" class="empty" style="display:none;"><div class="ei">📭</div><p>No videos found.</p></div>
+    </div>
+  </div>
+
+  <!-- NOTICES -->
+  <div class="section" id="sec-notices">
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><div class="card-ttl"><div class="ct-ic">📢</div>Create Notice</div></div>
+        <div class="alert" id="nAlert"></div>
+        <label class="flbl">Title</label>
+        <input class="finput" id="nTitle" placeholder="Notice title...">
+        <label class="flbl">Message</label>
+        <textarea class="ftextarea" id="nBody" placeholder="Notice content..."></textarea>
+        <label class="flbl">Type</label>
+        <div class="type-btns">
+          <button class="tbtn active" onclick="setNT(this,'')">📢 General</button>
+          <button class="tbtn" onclick="setNT(this,'important')">⚠️ Important</button>
+          <button class="tbtn" onclick="setNT(this,'tip')">💡 Tip</button>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="addN()">Publish Notice</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-ttl"><div class="ct-ic">🔔</div>Published Notices</div></div>
+        <div id="nList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="section" id="sec-users">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-ttl"><div class="ct-ic">👥</div>Registered Users</div>
+        <span class="pill" id="uCount">Loading...</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+          <tbody id="userTbl"></tbody>
+        </table>
+      </div>
+      <div id="userEmpty" class="empty" style="display:none;"><div class="ei">👤</div><p>No users yet.</p></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const API='';
+var nType='';
+var notices=JSON.parse(localStorage.getItem('crackit_notices')||'[]');
+var bootTime=Date.now();
+
+function goto(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.remove('active');
+    n.style.background='';
+    n.style.color='';
+    n.style.border='';
+  });
+  document.getElementById('sec-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  const t={dashboard:'Dashboard <span>Overview</span>',server:'Server <span>Status</span>',playlists:'Playlist <span>Manager</span>',videos:'Video <span>Library</span>',notices:'Notice <span>Board</span>',users:'User <span>Management</span>'};
+  document.getElementById('pageTitle').innerHTML=t[id]||id;
+  if(id==='videos')loadVids();
+  if(id==='users')loadUsers();
+  if(id==='playlists')loadPls();
+  if(id==='notices')renderNotices();
+  if(id==='server')renderSrvInfo();
+}
+
+function fmt(n){if(!n)return'0';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n;}
+function ago(d){if(!d)return'—';const s=(Date.now()-new Date(d))/1000;if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+function log(id,msg,t='info'){const b=document.getElementById(id);b.innerHTML+=`<div class="${t}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;b.scrollTop=b.scrollHeight;}
+function alert2(id,msg,t='ok'){const e=document.getElementById(id);e.textContent=msg;e.className=`alert ${t}`;e.style.display='block';setTimeout(()=>e.style.display='none',4000);}
+
+setInterval(()=>{
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString();
+  const u=Math.floor((Date.now()-bootTime)/1000),h=Math.floor(u/3600),m=Math.floor((u%3600)/60),s=u%60;
+  const el=document.getElementById('uptimeVal');if(el)el.textContent=`${h}h ${m}m ${s}s`;
+},1000);
+
+async function loadStats(){
+  try{
+    const r=await fetch(`${API}/api/stats`),s=await r.json();
+    document.getElementById('sTotal').textContent=fmt(s.total);
+    document.getElementById('sViews').textContent=fmt(s.views);
+    document.getElementById('sPl').textContent=s.plCount||'—';
+    try{const u=await fetch(`${API}/api/users/count`),d=await u.json();document.getElementById('sUsers').textContent=d.count||0;}catch(e){document.getElementById('sUsers').textContent='0';}
+  }catch(e){}
+}
+
+async function loadCatBars(){
+  try{
+    const cats=['UPSC','JEE','NEET','SSC','IBPS'];
+    const colors={UPSC:'#a855f7',JEE:'#3b82f6',NEET:'#10b981',SSC:'#f59e0b',IBPS:'#f43f5e'};
+    const r=await fetch(`${API}/api/videos?limit=2000`),{videos}=await r.json();
+    const total=videos.length||1,counts={};
+    cats.forEach(c=>counts[c]=0);
+    videos.forEach(v=>{if(counts[v.category]!==undefined)counts[v.category]++;});
+    document.getElementById('catBars').innerHTML=cats.map(c=>{
+      const pct=Math.round((counts[c]/total)*100);
+      return `<div class="cat-item">
+        <div class="cat-top"><span class="badge ${c}">${c}</span><span style="color:var(--sub);font-size:11px;">${counts[c]} · ${pct}%</span></div>
+        <div class="cat-bg"><div class="cat-fill" style="width:${pct}%;background:${colors[c]};"></div></div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function loadRecent(){
+  try{
+    const r=await fetch(`${API}/api/videos?limit=6`),{videos}=await r.json();
+    document.getElementById('recentTbl').innerHTML=videos.map(v=>`
+      <tr>
+        <td><img src="https://img.youtube.com/vi/${v.youtube_id}/mqdefault.jpg" class="thumb" alt=""></td>
+        <td style="max-width:220px;"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;">${v.title}</div></td>
+        <td><span class="badge ${v.category}">${v.category}</span></td>
+        <td style="color:var(--sub);font-size:12px;">👁 ${fmt(v.views)}</td>
+        <td style="color:var(--sub);font-size:12px;">${ago(v.created_at)}</td>
+      </tr>`).join('');
+  }catch(e){}
+}
+
+function renderSrvInfo(){
+  document.getElementById('srvInfo').innerHTML=`
+    <div class="info-row"><span class="ik">Database</span><span class="iv">SQLite — crackit.db</span></div>
+    <div class="info-row"><span class="ik">Port</span><span class="iv">3000</span></div>
+    <div class="info-row"><span class="ik">Auto Sync</span><span class="iv" style="color:var(--green);">Every 6 hours ✓</span></div>
+    <div class="info-row"><span class="ik">Auth System</span><span class="iv" style="color:var(--green);">Active ✓</span></div>
+    <div class="info-row"><span class="ik">YouTube Source</span><span class="iv">RSS Feed (No API Key)</span></div>
+    <div class="info-row"><span class="ik">Time</span><span class="iv">${new Date().toLocaleString()}</span></div>`;
+}
+
+async function syncAll(aId,lId){
+  log(lId,'Starting full sync...','info');
+  try{
+    const r=await fetch(`${API}/api/sync/all`,{method:'POST'}),d=await r.json();
+    if(d.results){
+      for(const res of d.results)res.success?log(lId,`✓ [${res.category}] ${res.label||''} — ${res.added} new`,'ok'):log(lId,`✗ [${res.category}] ${res.error}`,'err');
+      log(lId,`Total added: ${d.totalAdded}`,'ok');
+      alert2(aId,`✓ Done! ${d.totalAdded} new videos added.`);
+    }
+    loadStats();loadRecent();
+  }catch(e){log(lId,'✗ Cannot connect to server','err');}
+}
+
+async function syncOne(){
+  const pid=document.getElementById('plId').value.trim(),cat=document.getElementById('plCat').value,lbl=document.getElementById('plLabel').value.trim()||cat;
+  if(!pid){alert2('plAlert','Please enter a Playlist ID!','err');return;}
+  log('plLog',`Fetching: ${pid}...`,'info');
+  try{
+    const r=await fetch(`${API}/api/sync/playlist`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({playlistId:pid,category:cat,label:lbl})}),d=await r.json();
+    if(d.success){log('plLog',`✓ ${d.added} new videos added!`,'ok');alert2('plAlert',`✓ ${d.added} videos added!`);}
+    else{log('plLog',`✗ ${d.error}`,'err');alert2('plAlert',d.error,'err');}
+    loadStats();
+  }catch(e){log('plLog','✗ Server error','err');}
+}
+
+async function loadPls(){
+  try{
+    const r=await fetch(`${API}/api/playlists`),pls=await r.json();
+    const el=document.getElementById('plList');
+    if(!pls.length){el.innerHTML='<div class="empty"><div class="ei">📭</div><p>No playlists in playlists.js</p></div>';return;}
+    el.innerHTML=pls.map(p=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--s3);border-radius:10px;margin-bottom:8px;border:1px solid var(--border);">
+        <span class="badge ${p.category}">${p.category}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${p.label||p.category}</div>
+          <div style="font-size:10px;color:var(--sub);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.playlistId}</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="qSync('${p.playlistId}','${p.category}','${p.label||p.category}')">Sync</button>
+      </div>`).join('');
+  }catch(e){document.getElementById('plList').innerHTML='<div class="empty"><div class="ei">⚡</div><p>Cannot connect to server.</p></div>';}
+}
+
+async function qSync(pid,cat,lbl){
+  log('plLog',`Syncing: ${lbl}...`,'info');
+  try{
+    const r=await fetch(`${API}/api/sync/playlist`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({playlistId:pid,category:cat,label:lbl})}),d=await r.json();
+    d.success?log('plLog',`✓ ${lbl} — ${d.added} new`,'ok'):log('plLog',`✗ ${lbl} — ${d.error}`,'err');
+    loadStats();
+  }catch(e){log('plLog','✗ Server error','err');}
+}
+
+async function loadVids(){
+  const cat=document.getElementById('vCat').value,q=document.getElementById('vSearch').value;
+  const p=new URLSearchParams({limit:60});if(cat)p.set('category',cat);if(q)p.set('search',q);
+  try{
+    const r=await fetch(`${API}/api/videos?${p}`),{videos}=await r.json();
+    const tb=document.getElementById('vidTbl'),em=document.getElementById('vidEmpty');
+    if(!videos.length){tb.innerHTML='';em.style.display='block';return;}
+    em.style.display='none';
+    tb.innerHTML=videos.map(v=>`
+      <tr>
+        <td><img src="https://img.youtube.com/vi/${v.youtube_id}/mqdefault.jpg" class="thumb" alt=""></td>
+        <td style="max-width:200px;"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;">${v.title}</div></td>
+        <td><span class="badge ${v.category}">${v.category}</span></td>
+        <td style="color:var(--sub);font-size:12px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.label||'—'}</td>
+        <td style="color:var(--sub);font-size:12px;">👁 ${fmt(v.views)}</td>
+        <td style="color:var(--sub);font-size:12px;">${ago(v.created_at)}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="delVid(${v.id})">Delete</button></td>
+      </tr>`).join('');
+  }catch(e){document.getElementById('vidTbl').innerHTML=`<tr><td colspan="7" class="empty" style="padding:40px;">Cannot connect to server.</td></tr>`;}
+}
+
+async function delVid(id){if(!confirm('Delete this video permanently?'))return;await fetch(`${API}/api/videos/${id}`,{method:'DELETE'});loadVids();loadStats();}
+
+async function loadUsers(){
+  try{
+    const r=await fetch(`${API}/api/users`),users=await r.json();
+    document.getElementById('uCount').textContent=`${users.length} total`;
+    const tb=document.getElementById('userTbl'),em=document.getElementById('userEmpty');
+    if(!users.length){tb.innerHTML='';em.style.display='block';return;}
+    em.style.display='none';
+    tb.innerHTML=users.map(u=>`
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:10px;">
+          <div class="u-av">${u.name.charAt(0).toUpperCase()}</div>
+          <span style="font-weight:600;">${u.name}</span>
+        </div></td>
+        <td style="color:var(--sub);font-size:13px;">${u.email}</td>
+        <td style="color:var(--sub);font-size:12px;">${ago(u.created_at)}</td>
+        <td><span style="background:rgba(16,185,129,.1);color:var(--green);padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.5px;">ACTIVE</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="delUser(${u.id})">Delete</button></td>
+      </tr>`).join('');
+  }catch(e){document.getElementById('userTbl').innerHTML=`<tr><td colspan="5" class="empty" style="padding:40px;">Cannot connect to server.</td></tr>`;}
+}
+
+async function delUser(id){if(!confirm('Delete this user?'))return;await fetch(`${API}/api/users/${id}`,{method:'DELETE'});loadUsers();loadStats();}
+
+function setNT(btn,t){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');nType=t;}
+function addN(){
+  const title=document.getElementById('nTitle').value.trim(),body=document.getElementById('nBody').value.trim();
+  if(!title||!body){alert2('nAlert','Please fill in all fields!','err');return;}
+  notices.unshift({id:Date.now(),title,body,type:nType,date:new Date().toLocaleDateString()});
+  localStorage.setItem('crackit_notices',JSON.stringify(notices));
+  document.getElementById('nTitle').value='';document.getElementById('nBody').value='';
+  alert2('nAlert','✓ Notice published!');renderNotices();
+}
+function delN(id){notices=notices.filter(n=>n.id!==id);localStorage.setItem('crackit_notices',JSON.stringify(notices));renderNotices();}
+function renderNotices(){
+  const el=document.getElementById('nList');
+  if(!notices.length){el.innerHTML='<div class="empty"><div class="ei">🔔</div><p>No notices yet.</p></div>';return;}
+  const ac={'':`var(--accent)`,'important':'var(--red)','tip':'var(--green)'};
+  el.innerHTML=notices.map(n=>`
+    <div style="border-left:3px solid ${ac[n.type]||'var(--accent)'};background:var(--s3);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">${n.title}</div>
+        <button class="btn btn-danger btn-sm" onclick="delN(${n.id})">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--sub);line-height:1.7;">${n.body}</div>
+      <div style="font-size:10px;color:var(--sub);margin-top:8px;letter-spacing:.5px;">${n.date}</div>
+    </div>`).join('');
+}
+
+loadStats();loadCatBars();loadRecent();
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// Close sidebar after nav click on mobile
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if(window.innerWidth <= 900) closeSidebar();
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrackIt Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f7f8fc; --white:#fff; --text:#1a1d2e; --muted:#6b7280;
+  --border:#e5e7eb; --accent:#4f46e5; --accent-light:#eef2ff;
+  --green:#059669; --red:#dc2626;
+  --upsc:#7c3aed; --jee:#0284c7; --neet:#059669; --ssc:#d97706; --ibps:#dc2626;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;padding:32px;}
+h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--accent);margin-bottom:6px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+.back{color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;display:inline-block;margin-bottom:20px;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.stat-n{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--accent);}
+.stat-l{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+
+.grid{display:grid;grid-template-columns:420px 1fr;gap:20px;}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.card h2{font-family:'Syne',sans-serif;font-size:17px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px;}
+input,select{width:100%;background:var(--bg);border:1.5px solid var(--border);color:var(--text);
+  padding:10px 14px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;margin-bottom:14px;}
+input:focus,select:focus{border-color:var(--accent);}
+select option{background:var(--white);}
+
+.btn{border:none;padding:11px 20px;border-radius:8px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;transition:all .2s;}
+.btn-accent{background:var(--accent);color:#fff;width:100%;}
+.btn-accent:hover{background:#4338ca;}
+.btn-sync-all{background:linear-gradient(90deg,var(--accent),#7c3aed);color:#fff;width:100%;margin-bottom:12px;font-size:15px;padding:13px;}
+
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;}
+.alert.ok{background:#d1fae5;border:1px solid #6ee7b7;color:var(--green);}
+.alert.err{background:#fee2e2;border:1px solid #fca5a5;color:var(--red);}
+
+/* Sync Log */
+.log-box{background:#0f1117;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;
+  max-height:160px;overflow-y:auto;line-height:2;margin-top:14px;}
+.log-box .ok{color:#34d399;} .log-box .err{color:#f87171;} .log-box .info{color:#6b7280;}
+
+/* Playlist list */
+.pl-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.pl-row{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;}
+.pl-cat{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;}
+.pl-cat.UPSC{background:var(--upsc);} .pl-cat.JEE{background:var(--jee);}
+.pl-cat.NEET{background:var(--neet);} .pl-cat.SSC{background:var(--ssc);} .pl-cat.IBPS{background:var(--ibps);}
+.pl-info{flex:1;min-width:0;}
+.pl-label{font-size:13px;font-weight:600;margin-bottom:2px;}
+.pl-id{font-size:11px;color:var(--muted);font-family:monospace;}
+.btn-sm{background:var(--bg);border:1px solid var(--border);color:var(--muted);
+  padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+
+/* Video rows */
+.vid-list{display:flex;flex-direction:column;gap:10px;max-height:500px;overflow-y:auto;}
+.vid-row{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;}
+.vid-thumb{width:80px;height:45px;border-radius:6px;object-fit:cover;flex-shrink:0;}
+.vid-info{flex:1;min-width:0;}
+.vid-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.vid-meta{font-size:11px;color:var(--muted);display:flex;gap:8px;}
+.btn-del{background:#fee2e2;color:var(--red);border:1px solid #fca5a5;padding:5px 12px;border-radius:6px;
+  cursor:pointer;font-size:12px;transition:all .2s;}
+.btn-del:hover{background:var(--red);color:#fff;}
+
+.empty-pl{color:var(--muted);font-size:13px;text-align:center;padding:20px;}
+</style>
+</head>
+<body>
+<a href="/" class="back">← Back to CrackIt</a>
+<h1>📚 Admin Panel</h1>
+<p class="sub">Manage playlists and video library</p>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="sTotal">-</div><div class="stat-l">Total Videos</div></div>
+  <div class="stat"><div class="stat-n" id="sViews">-</div><div class="stat-l">Total Views</div></div>
+  <div class="stat"><div class="stat-n" id="sCats">-</div><div class="stat-l">Categories</div></div>
+  <div class="stat"><div class="stat-n" id="sPl">-</div><div class="stat-l">Playlists</div></div>
+</div>
+
+<div class="grid">
+  <!-- LEFT: Sync Panel -->
+  <div>
+    <div class="card" style="margin-bottom:16px">
+      <h2>🔄 Sync Playlists</h2>
+      <div class="alert" id="alertBox"></div>
+
+      <button class="btn btn-sync-all" onclick="syncAll()">🚀 Sync ALL Playlists Now</button>
+
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Sync single playlist:</p>
+        <label>Playlist ID</label>
+        <input id="plId" placeholder="PLxxxxxxxxxxxxxx">
+        <label>Category</label>
+        <select id="plCat">
+          <option>UPSC</option><option>JEE</option><option>NEET</option>
+          <option>SSC</option><option>IBPS</option>
+        </select>
+        <label>Label (Playlist Name)</label>
+        <input id="plLabel" placeholder="e.g. Physics by PW">
+        <button class="btn btn-accent" onclick="syncOne()">▶ Sync This Playlist</button>
+      </div>
+
+      <div class="log-box" id="logBox">
+        <span class="info">Logs will appear here after sync...</span>
+      </div>
+    </div>
+
+    <!-- Configured Playlists -->
+    <div class="card">
+      <h2>📋 Configured Playlists</h2>
+      <div class="pl-list" id="plList"><div class="empty-pl">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Video Library -->
+  <div class="card">
+    <h2>🎬 Video Library</h2>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <select id="filterCat" onchange="loadVideos()" style="margin-bottom:0;flex:1;">
+        <option value="">All Categories</option>
+        <option>UPSC</option><option>JEE</option><option>NEET</option>
+        <option>SSC</option><option>IBPS</option>
+      </select>
+    </div>
+    <div class="vid-list" id="vidList"><div class="empty-pl">Loading...</div></div>
+  </div>
+</div>
+
+<script>
+const API='';
+function fmt(n){if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n||0;}
+
+function log(msg,type='info'){
+  const box=document.getElementById('logBox');
+  box.innerHTML+=`<div class="${type}">${msg}</div>`;
+  box.scrollTop=box.scrollHeight;
+}
+
+function showAlert(msg,type='ok'){
+  const el=document.getElementById('alertBox');
+  el.textContent=msg; el.className=`alert ${type}`; el.style.display='block';
+  setTimeout(()=>el.style.display='none',4000);
+}
+
+async function loadStats(){
+  try{
+    const r=await fetch(`${API}/api/stats`);
+    const s=await r.json();
+    document.getElementById('sTotal').textContent=s.total;
+    document.getElementById('sViews').textContent=fmt(s.views);
+    document.getElementById('sCats').textContent=s.cats;
+    document.getElementById('sPl').textContent=s.plCount;
+  }catch(e){}
+}
+
+async function loadPlaylists(){
+  try{
+    const r=await fetch(`${API}/api/playlists`);
+    const pls=await r.json();
+    const el=document.getElementById('plList');
+    if(!pls.length){el.innerHTML='<div class="empty-pl">No playlists in playlists.js yet!</div>';return;}
+    el.innerHTML=pls.map(p=>`
+      <div class="pl-row">
+        <div class="pl-cat ${p.category}">${p.category}</div>
+        <div class="pl-info">
+          <div class="pl-label">${p.label||p.category}</div>
+          <div class="pl-id">${p.playlistId}</div>
+        </div>
+        <button class="btn-sm" onclick="quickSync('${p.playlistId}','${p.category}','${p.label||p.category}')">▶ Sync</button>
+      </div>`).join('');
+  }catch(e){document.getElementById('plList').innerHTML='<div class="empty-pl">Server se connect nahi hua.</div>';}
+}
+
+async function loadVideos(){
+  const cat=document.getElementById('filterCat').value;
+  const params=new URLSearchParams({limit:50});
+  if(cat) params.set('category',cat);
+  try{
+    const r=await fetch(`${API}/api/videos?${params}`);
+    const{videos}=await r.json();
+    const el=document.getElementById('vidList');
+    if(!videos.length){el.innerHTML='<div class="empty-pl">Koi video nahi mila.</div>';return;}
+    el.innerHTML=videos.map(v=>`
+      <div class="vid-row">
+        <img class="vid-thumb" src="https://img.youtube.com/vi/${v.youtube_id}/mqdefault.jpg" alt="">
+        <div class="vid-info">
+          <div class="vid-title">${v.title}</div>
+          <div class="vid-meta">
+            <span class="pl-cat ${v.category}" style="font-size:10px;padding:1px 6px;">${v.category}</span>
+            <span>${v.label||''}</span>
+            <span>👁 ${fmt(v.views)}</span>
+          </div>
+        </div>
+        <button class="btn-del" onclick="delVideo(${v.id})">🗑</button>
+      </div>`).join('');
+  }catch(e){document.getElementById('vidList').innerHTML='<div class="empty-pl">Server se connect nahi hua.</div>';}
+}
+
+async function syncAll(){
+  document.getElementById('logBox').innerHTML='';
+  log('🚀 Syncing all playlists...','info');
+  try{
+    const r=await fetch(`${API}/api/sync/all`,{method:'POST'});
+    const data=await r.json();
+    if(data.results){
+      for(const res of data.results){
+        if(res.success) log(`✅ [${res.category}] ${res.label} — ${res.added} new videos added`,'ok');
+        else log(`❌ [${res.category}] ${res.label} — ${res.error}`,'err');
+      }
+      log(`\n💾 Total new videos: ${data.totalAdded}`,'ok');
+    }
+    showAlert(`✅ Sync complete! ${data.totalAdded} new videos added`);
+    loadStats(); loadVideos();
+  }catch(e){log('❌ Server se connect nahi hua. Server run kar rahe hain?','err');}
+}
+
+async function syncOne(){
+  const playlistId=document.getElementById('plId').value.trim();
+  const category=document.getElementById('plCat').value;
+  const label=document.getElementById('plLabel').value.trim()||category;
+  if(!playlistId){showAlert('Playlist ID daalo!','err');return;}
+
+  document.getElementById('logBox').innerHTML='';
+  log(`📡 Syncing playlist: ${playlistId}...`,'info');
+  try{
+    const r=await fetch(`${API}/api/sync/playlist`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({playlistId,category,label})
+    });
+    const data=await r.json();
+    if(data.success){
+      log(`✅ Found ${data.found} videos, added ${data.added} new!`,'ok');
+      showAlert(`✅ ${data.added} videos added!`);
+    }else{
+      log(`❌ ${data.error}`,'err');
+      showAlert(data.error,'err');
+    }
+    loadStats(); loadVideos();
+  }catch(e){log('❌ Server error','err');}
+}
+
+async function quickSync(playlistId,category,label){
+  log(`📡 Syncing: ${label}...`,'info');
+  try{
+    const r=await fetch(`${API}/api/sync/playlist`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({playlistId,category,label})
+    });
+    const data=await r.json();
+    if(data.success) log(`✅ ${label} — ${data.added} new videos`,'ok');
+    else log(`❌ ${label} — ${data.error}`,'err');
+    loadStats(); loadVideos();
+  }catch(e){log('❌ Server error','err');}
+}
+
+async function delVideo(id){
+  if(!confirm('Delete this video?')) return;
+  await fetch(`${API}/api/videos/${id}`,{method:'DELETE'});
+  loadVideos(); loadStats();
+}
+
+loadStats(); loadPlaylists(); loadVideos();
+</script>
+</body>
+</html>
