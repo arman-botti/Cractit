@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["npm install", "npm rebuild better-sqlite3"]
+
+[start]
+cmd = "node server.js"
